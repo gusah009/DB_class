@@ -21,5 +21,6 @@ urlpatterns = [
     path('', views.main, name='assignment1_main'),
     path('create/', views.create, name='assignment1_newRecord'),
     path('edit/<int:student_id>/', views.edit, name='assignment1_updateRecord'),
+    path('delete/<int:student_id>/', views.delete, name='assignment1_deleteRecord'),
     path('search/<str:keyword>/', views.search, name='assignment1_search')
 ]
