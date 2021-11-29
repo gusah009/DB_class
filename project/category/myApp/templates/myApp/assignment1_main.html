@@ -5,7 +5,7 @@
     <title>Categories Database:</title>
 </head>
 <body>
-<button>+ Add New Record</button>
+<button onclick="location.href='/create/'">+ Add New Record</button>
 <br>
 <input type="text" placeholder="Search"> <button>Search by name</button>
 <table>
@@ -17,7 +17,8 @@
         <td>{{ student.age }}</td>
         <td>{{ student.major }}</td>
         <td>{{ student.address }}</td>
-        <td><button>Edit record</button><button>Delete record</button></td>
+        <td><button onclick="location.href='/edit/{{ student.id }}/'">Edit record</button>
+            <button onclick="location.href='/delete/{{ student.id }}/'">Delete record</button></td>
     </tr>
 {% endfor %}
 </table>
