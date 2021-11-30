@@ -37,7 +37,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="C:\Users\gusah\OneDrive\바탕 화면\2021-2\수업\DB\DB_class\.projectEnv"
+VIRTUAL_ENV="C:\Users\minion\Desktop\2021-2\DB_class\.projectEnv"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"

@@ -1,4 +1,4 @@
-#!c:\users\gusah\onedrive\바탕 화면\2021-2\수업\db\db_class\.projectenv\scripts\python.exe
+#!c:\users\minion\desktop\2021-2\db_class\.projectenv\scripts\python.exe
 # When the django-admin.py deprecation ends, remove this script.
 import warnings
 
