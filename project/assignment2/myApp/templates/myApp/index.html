@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Assignment2</title>
+</head>
+<body>
+<h2>Students table</h2>
+<table>
+    <thead>
+        <tr>
+        <th>student id</th>
+        <th>student name</th>
+        <th>student score</th>
+        <th>student county</th>
+    </tr>
+    </thead>
+{% for student in students %}
+    <tr>
+        <td>{{ student.studentID }}</td>
+        <td>{{ student.name }}</td>
+        <td>{{ student.score }}</td>
+        <td>{{ student.county }}</td>
+    </tr>
+{% endfor %}
+</table>
+<h2>Professors table</h2>
+<table>
+    <thead>
+        <tr>
+        <th>professor id</th>
+        <th>professor name</th>
+        <th>professor age</th>
+        <th>professor county</th>
+    </tr>
+    </thead>
+{% for student in students %}
+    <tr>
+        <td>{{ professor.facultyID }}</td>
+        <td>{{ professor.name }}</td>
+        <td>{{ professor.age }}</td>
+        <td>{{ professor.county }}</td>
+    </tr>
+{% endfor %}
+</table>
+<h2>Counties table</h2>
+<table>
+    <thead>
+        <tr>
+        <th>county name</th>
+        <th>county population</th>
+        <th>county city</th>
+    </tr>
+    </thead>
+{% for county in Counties %}
+    <tr>
+        <td>{{ county.countyName }}</td>
+        <td>{{ county.population }}</td>
+        <td>{{ county.city }}</td>
+    </tr>
+{% endfor %}
+<h2>COVID table</h2>
+<table>
+    <thead>
+        <tr>
+        <th>COVID patientID</th>
+        <th>COVID city</th>
+    </tr>
+    </thead>
+{% for covidInfo in COVID %}
+    <tr>
+        <td>{{ covidInfo.patientID }}</td>
+        <td>{{ covidInfo.city }}</td>
+    </tr>
+{% endfor %}
+</table>
+<br>
+<br>
+<h2>Example query result:</h2>
+<table>
+    <thead>
+        <tr>
+            <th>category name</th>
+            <th>category description</th>
+    </tr>
+    </thead>
+{% for i in output1 %}
+    <tr>
+        <td>{{ i.categoryname }}</td>
+        <td>{{ i.categorydescription }}</td>
+    </tr>
+{% endfor %}
+</table>
+</body>
+</html>
