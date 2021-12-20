@@ -1,5 +1,7 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.db import connection
+import pandas as pd
+import os
 
 # Create your views here.
 
@@ -11,38 +13,29 @@ def display(request):
     outputOfQuery1 = []
     with connection.cursor() as cursor:
         sqlQueryStudents = """  
-                            SELECT `students`.`studentID`,
-                                `students`.`name`,
-                                `students`.`score`,
-                                `students`.`county`
-                            FROM `assignment2db`.`students`;
+                            SELECT `studentID`, `name`, `score`, `county`
+                            FROM `Students`;
                             """
         cursor.execute(sqlQueryStudents)
         fetchResultStudents = cursor.fetchall()
         
         sqlQueryProfessors = """
-                            SELECT `professor`.`facultyID`,
-                                `professor`.`name`,
-                                `professor`.`age`,
-                                `professor`.`county`
-                            FROM `assignment2db`.`professor`;
+                            SELECT `facultyID`, `name`, `age`, `county`
+                            FROM `Professors`;
                             """
         cursor.execute(sqlQueryProfessors)
         fetchResultProfessors = cursor.fetchall()
         
         sqlQueryCounties = """
-                            SELECT `counties`.`countyName`,
-                                `counties`.`population`,
-                                `counties`.`city`
-                            FROM `assignment2db`.`counties`;
+                            SELECT `countyName`, `population`, `city`
+                            FROM `Counties`;
                             """        
         cursor.execute(sqlQueryCounties)
         fetchResultCounties = cursor.fetchall()
         
         sqlQueryCOVID = """
-                        SELECT `covid`.`patientID`,
-                            `covid`.`city`
-                        FROM `assignment2db`.`covid`;
+                            SELECT `patientID`, `city`
+                            FROM `COVID`;
                         """        
         cursor.execute(sqlQueryCOVID)
         fetchResultCOVID = cursor.fetchall()
@@ -80,7 +73,7 @@ def display(request):
             outputStudents.append(eachRow)
 
         for temp in fetchResultProfessors:
-            eachRow =   {'facultyID', temp[0], 'name', temp[1], 'age', temp[2], 'county', temp[3]}
+            eachRow =   {'facultyID': temp[0], 'name': temp[1], 'age': temp[2], 'county': temp[3]}
             outputProfessors.append(eachRow)
                             
         for temp in fetchResultCounties:
@@ -88,7 +81,7 @@ def display(request):
             outputCounties.append(eachRow)
 
         for temp in fetchResultCOVID:
-            eachRow =   {'patientID': temp[0], 'name': temp[1]}
+            eachRow =   {'patientID': temp[0], 'city': temp[1]}
             outputCOVID.append(eachRow)
 
         # for temp in fetchResultQuery1:
@@ -99,3 +92,64 @@ def display(request):
                                                 "Professors": outputProfessors,
                                                 "Counties": outputCounties,
                                                 "COVID": outputCOVID})
+
+
+def students(request):
+    df = pd.read_csv("./myApp/templates/myApp/students.csv", header=None)
+    with connection.cursor() as cursor:
+        for _, row in df.iterrows():
+            sqlQueryStudents = f"""
+                INSERT INTO Students(`studentID`, `name`, `score`, `county`)
+                VALUES ('{row[0]}', '{row[1]}', '{row[2]}', '{row[3]}');
+                """
+            cursor.execute(sqlQueryStudents)
+        cursor.fetchall()
+        connection.commit()
+        connection.close()
+        
+    return redirect('index')
+    
+def professors(request):
+    df = pd.read_csv("./myApp/templates/myApp/professors.csv", header=None)
+    with connection.cursor() as cursor:
+        for _, row in df.iterrows():
+            sqlQueryProfessors = f"""
+                INSERT INTO Professors(`facultyID`, `name`, `age`, `county`)
+                VALUES ('{row[0]}', '{row[1]}', '{row[2]}', '{row[3]}');
+                """
+            cursor.execute(sqlQueryProfessors)
+        cursor.fetchall()
+        connection.commit()
+        connection.close()
+        
+    return redirect('index')
+
+def counties(request):
+    df = pd.read_csv("./myApp/templates/myApp/counties.csv", header=None)
+    with connection.cursor() as cursor:
+        for _, row in df.iterrows():
+            sqlQueryCounties = f"""
+                INSERT INTO Counties(`countyName`, `population`, `city`)
+                VALUES ('{row[0]}', '{row[1]}', '{row[2]}');
+                """
+            cursor.execute(sqlQueryCounties)
+        cursor.fetchall()
+        connection.commit()
+        connection.close()
+        
+    return redirect('index')
+    
+def covid(request):
+    df = pd.read_csv("./myApp/templates/myApp/students.csv", header=None)
+    with connection.cursor() as cursor:
+        for _, row in df.iterrows():
+            sqlQueryCOVID = f"""
+                INSERT INTO COVID(`patientID`, `city`)
+                VALUES ('{row[0]}', '{row[1]}');
+                """
+            cursor.execute(sqlQueryCOVID)
+        cursor.fetchall()
+        connection.commit()
+        connection.close()
+        
+    return redirect('index')

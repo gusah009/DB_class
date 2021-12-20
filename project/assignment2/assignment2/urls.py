@@ -19,4 +19,8 @@ from myApp import views
 
 urlpatterns = [
     path('', views.display, name='index'),
+    path('students', views.students, name='students'),
+    path('professors', views.professors, name='professors'),
+    path('counties', views.counties, name='counties'),
+    path('covid', views.covid, name='covid'),
 ]
