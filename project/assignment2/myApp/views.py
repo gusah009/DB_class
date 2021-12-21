@@ -11,6 +11,10 @@ def display(request):
     outputCounties = []
     outputCOVID = []
     outputOfQuery1 = []
+    outputOfQuery2 = []
+    outputOfQuery3 = []
+    outputOfQuery4 = []
+    outputOfQuery5 = []
     with connection.cursor() as cursor:
         sqlQueryStudents = """  
                             SELECT `studentID`, `name`, `score`, `county`
@@ -40,30 +44,109 @@ def display(request):
         cursor.execute(sqlQueryCOVID)
         fetchResultCOVID = cursor.fetchall()
 
-        # sqlQuery1 = """
-        # """
-        # cursor.execute(sqlQuery1)
-        # fetchResultQuery1 = cursor.fetchall()
+        sqlQuery1 = """
+            SELECT county AS countyName, AVG(score) AS score
+            FROM Students
+            GROUP BY county
+            ORDER BY county ASC;
+                    """
+        cursor.execute(sqlQuery1)
+        fetchResultQuery1 = cursor.fetchall()
         
-        # sqlQuery2 = """
-        # """
-        # cursor.execute(sqlQuery2)
-        # fetchResultQuery2 = cursor.fetchall()
+        sqlQuery2 = """
+            SELECT city AS cityName, AVG(score) AS score
+            FROM Students JOIN Counties
+            ON county = countyName 
+            GROUP BY city
+            ORDER BY city ASC;
+                    """
+        cursor.execute(sqlQuery2)
+        fetchResultQuery2 = cursor.fetchall()
 
-        # sqlQuery3 = """
-        # """
-        # cursor.execute(sqlQuery3)
-        # fetchResultQuery3 = cursor.fetchall()
+        sqlQuery3 = """
+            SELECT profName, name
+            FROM (SELECT t1.county, name
+                FROM Students as t1 
+                JOIN (SELECT MAX(score) as score, county
+                    FROM Students
+                    GROUP BY county) as t2
+                ON t1.county = t2.county and
+                t1.score = t2.score
+                ORDER BY t1.county) as t1
+            JOIN
+                (SELECT t1.county, name as profName
+                FROM Professors as t1 
+                JOIN (SELECT MAX(age) as age, county
+                    FROM Professors
+                    GROUP BY county) as t2
+                ON t1.county = t2.county and
+                t1.age = t2.age
+                ORDER BY t1.county) as t2
+            ON t1.county = t2.county
+            ORDER BY t1.county;
+                    """
+        cursor.execute(sqlQuery3)
+        fetchResultQuery3 = cursor.fetchall()
 
-        # sqlQuery4 = """
-        # """
-        # cursor.execute(sqlQuery4)
-        # fetchResultQuery4 = cursor.fetchall()
+
+        sqlQuery4 = """
+            SELECT profName, name
+            FROM (SELECT t1.city, name
+                FROM (SELECT * FROM Students as std JOIN Counties as c ON std.county = c.countyName) as t1 
+                JOIN (SELECT MAX(score) as score, city
+                    FROM (SELECT * FROM Students as std JOIN Counties as c ON std.county = c.countyName) as t3
+                    GROUP BY city) as t2
+                ON t1.city = t2.city and
+                t1.score = t2.score
+                ORDER BY t1.city) as t1
+            JOIN
+                (SELECT t1.city, name as profName
+                FROM (SELECT * FROM Professors as prof JOIN Counties as c ON prof.county = c.countyName) as t1 
+                JOIN (SELECT MAX(age) as age, city
+                    FROM (SELECT * FROM Professors as prof JOIN Counties as c ON prof.county = c.countyName) as t3
+                    GROUP BY city) as t2
+                ON t1.city = t2.city and
+                t1.age = t2.age
+                ORDER BY t1.city) as t2
+            ON t1.city = t2.city
+            ORDER BY t1.city;
+                    """
+        cursor.execute(sqlQuery4)
+        fetchResultQuery4 = cursor.fetchall()
         
-        # sqlQuery5 = """
-        # """
-        # cursor.execute(sqlQuery5)
-        # fetchResultQuery5 = cursor.fetchall()
+        sqlQuery5 = """
+            SELECT 
+                tt.name as name, tt.city as city
+            FROM
+                (SELECT *
+                    FROM Students as t1
+                    JOIN Counties as t2
+                    ON t1.county = t2.countyName) as tt
+            WHERE
+                tt.city IN (SELECT 
+                        tmp.city
+                    FROM
+                        (SELECT 
+                            t1.city
+                        FROM
+                            (SELECT 
+                                city, SUM(population) AS pop
+                            FROM
+                                Counties
+                            GROUP BY city) AS t1
+                        JOIN (SELECT 
+                                city, COUNT(patientID) AS pat
+                            FROM
+                                COVID
+                            GROUP BY city) AS t2
+                        ON t1.city = t2.city
+                        ORDER BY t2.pat / t1.pop DESC
+                        LIMIT 3 
+                        ) AS tmp
+                    );
+                    """
+        cursor.execute(sqlQuery5)
+        fetchResultQuery5 = cursor.fetchall()
 
         connection.commit()
         connection.close()
@@ -84,14 +167,35 @@ def display(request):
             eachRow =   {'patientID': temp[0], 'city': temp[1]}
             outputCOVID.append(eachRow)
 
-        # for temp in fetchResultQuery1:
-        #     eachRow = {'categoryname': temp[0], 'categorydescription': temp[1]}
-        #     outputOfQuery1.append(eachRow)
+        for temp in fetchResultQuery1:
+            eachRow = {'countyName': temp[0], 'score': round(temp[1], 3)}
+            outputOfQuery1.append(eachRow)
+
+        for temp in fetchResultQuery2:
+            eachRow = {'cityName': temp[0], 'score': round(temp[1], 3)}
+            outputOfQuery2.append(eachRow)
+
+        for temp in fetchResultQuery3:
+            eachRow = {'profName': temp[0], 'name': temp[1]}
+            outputOfQuery3.append(eachRow)
+
+        for temp in fetchResultQuery4:
+            eachRow = {'profName': temp[0], 'name': temp[1]}
+            outputOfQuery4.append(eachRow)
+
+        for temp in fetchResultQuery5:
+            eachRow = {'name': temp[0], 'city': temp[1]}
+            outputOfQuery5.append(eachRow)
 
     return render(request, 'myApp/index.html', {"Students": outputStudents,
                                                 "Professors": outputProfessors,
                                                 "Counties": outputCounties,
-                                                "COVID": outputCOVID})
+                                                "COVID": outputCOVID,
+                                                "output1": outputOfQuery1,
+                                                "output2": outputOfQuery2,
+                                                "output3": outputOfQuery3,
+                                                "output4": outputOfQuery4,
+                                                "output5": outputOfQuery5})
 
 
 def students(request):
@@ -140,7 +244,7 @@ def counties(request):
     return redirect('index')
     
 def covid(request):
-    df = pd.read_csv("./myApp/templates/myApp/students.csv", header=None)
+    df = pd.read_csv("./myApp/templates/myApp/covid.csv", header=None)
     with connection.cursor() as cursor:
         for _, row in df.iterrows():
             sqlQueryCOVID = f"""

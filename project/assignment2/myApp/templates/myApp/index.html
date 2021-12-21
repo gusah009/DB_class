@@ -93,18 +93,82 @@
 </table>
 <br>
 <br>
-<h2>Example query result:</h2>
+<h2>Query #1:</h2>
 <table>
     <thead>
         <tr>
-            <th>category name</th>
-            <th>category description</th>
+            <th>countyName</th>
+            <th>averageScore</th>
     </tr>
     </thead>
 {% for i in output1 %}
     <tr>
-        <td>{{ i.categoryname }}</td>
-        <td>{{ i.categorydescription }}</td>
+        <td>{{ i.countyName }}</td>
+        <td>{{ i.score }}</td>
+    </tr>
+{% endfor %}
+</table>
+
+<h2>Query #2:</h2>
+<table>
+    <thead>
+        <tr>
+            <th>cityName</th>
+            <th>averageScore</th>
+    </tr>
+    </thead>
+{% for i in output2 %}
+    <tr>
+        <td>{{ i.cityName }}</td>
+        <td>{{ i.score }}</td>
+    </tr>
+{% endfor %}
+</table>
+
+<h2>Query #3:</h2>
+<table>
+    <thead>
+        <tr>
+            <th>professorName</th>
+            <th>studentName</th>
+    </tr>
+    </thead>
+{% for i in output3 %}
+    <tr>
+        <td>{{ i.profName }}</td>
+        <td>{{ i.name }}</td>
+    </tr>
+{% endfor %}
+</table>
+
+<h2>Query #4:</h2>
+<table>
+    <thead>
+        <tr>
+            <th>professorName</th>
+            <th>studentName</th>
+    </tr>
+    </thead>
+{% for i in output4 %}
+    <tr>
+        <td>{{ i.profName }}</td>
+        <td>{{ i.name }}</td>
+    </tr>
+{% endfor %}
+</table>
+
+<h2>Query #5:</h2>
+<table>
+    <thead>
+        <tr>
+            <th>studentName</th>
+            <th>cityName</th>
+    </tr>
+    </thead>
+{% for i in output5 %}
+    <tr>
+        <td>{{ i.name }}</td>
+        <td>{{ i.city }}</td>
     </tr>
 {% endfor %}
 </table>
